@@ -4,7 +4,8 @@ I use the following bit-naming convention for recalling easily the opcode bits:
   * 0 0 0 0 0
 
 ### ALU OPERATION
-OpCode is refered to a logical-arithmetical operation iff ***a* bit is zero**.
+![alt text  ](https://github.com/GiacomoPauletti/Frontier/blob/124cc740786ddc1c4ed53e6f7818cfa397a218ef/circuit/Components/control_unit/aluop.png)  
+OpCode is refered to a logical-arithmetical operation if ***a* bit is zero**.
 For example:
   * 00010 is a logical-arithmetical operation (in particular it's a sub), but 10010 it's not
 
