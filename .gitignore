@@ -1,3 +1,8 @@
+# Not-to-load
+sources/
+*.avi
+
+# Automatically generated gitignore for C
 # Prerequisites
 *.d
 
