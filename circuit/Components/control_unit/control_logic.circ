@@ -1474,19 +1474,13 @@
       <a name="label" val="Branch"/>
       <a name="output" val="true"/>
     </comp>
-    <comp lib="0" loc="(860,830)" name="Pin">
-      <a name="appearance" val="NewPins"/>
-      <a name="facing" val="west"/>
-      <a name="label" val="PcSrc"/>
-      <a name="output" val="true"/>
-    </comp>
-    <comp lib="0" loc="(860,910)" name="Pin">
+    <comp lib="0" loc="(860,840)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
       <a name="label" val="WriteRA"/>
       <a name="output" val="true"/>
     </comp>
-    <comp lib="0" loc="(860,960)" name="Pin">
+    <comp lib="0" loc="(860,930)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
       <a name="label" val="AluSrc1"/>
@@ -1599,122 +1593,122 @@
     <comp lib="1" loc="(860,1010)" name="AND Gate">
       <a name="size" val="30"/>
     </comp>
-    <comp lib="8" loc="(1021,1609)" name="Text">
+    <comp lib="8" loc="(1020,1605)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="RegWrite = not(a and (b xor e)) or (a and b and notc and not d and note)"/>
     </comp>
-    <comp lib="8" loc="(1031,437)" name="Text">
+    <comp lib="8" loc="(1030,435)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="AluSrc2 = b"/>
     </comp>
-    <comp lib="8" loc="(1033,500)" name="Text">
+    <comp lib="8" loc="(1030,500)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="FlagWrite = (e xor d) and not c and not a"/>
     </comp>
-    <comp lib="8" loc="(1034,575)" name="Text">
+    <comp lib="8" loc="(1030,575)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="JumpSrc = 1 if the offset is in a register, 0 if it's immediate"/>
     </comp>
-    <comp lib="8" loc="(1034,651)" name="Text">
+    <comp lib="8" loc="(1030,650)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="Jump = branch and not d"/>
     </comp>
-    <comp lib="8" loc="(1038,756)" name="Text">
-      <a name="font" val="SansSerif plain 15"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="Branch = PcSrc = WriteRA = AluSrc1 = (a and b) xor ( not a and b and c and not d and e)"/>
-    </comp>
-    <comp lib="8" loc="(1039,1281)" name="Text">
+    <comp lib="8" loc="(1035,1280)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="MemWrite = a and not b and not c and d and e"/>
     </comp>
-    <comp lib="8" loc="(1041,1396)" name="Text">
+    <comp lib="8" loc="(1035,755)" name="Text">
+      <a name="font" val="SansSerif plain 15"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="Branch = PcSrc = WriteRA = AluSrc1 = (a and b) xor ( not a and b and c and not d and e)"/>
+    </comp>
+    <comp lib="8" loc="(1040,1395)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="MemToReg = MemRead = a and not b and not c and d and not e"/>
     </comp>
-    <comp lib="8" loc="(1047,671)" name="Text">
-      <a name="font" val="SansSerif plain 15"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="Jump = 1 if it's a jump instruction but not a branch"/>
-    </comp>
-    <comp lib="8" loc="(1049,518)" name="Text">
+    <comp lib="8" loc="(1045,515)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="Active only for &quot;add&quot;, &quot;addi&quot; and &quot;sub&quot; instructions"/>
     </comp>
-    <comp lib="8" loc="(1052,1646)" name="Text">
+    <comp lib="8" loc="(1045,670)" name="Text">
+      <a name="font" val="SansSerif plain 15"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="Jump = 1 if it's a jump instruction but not a branch"/>
+    </comp>
+    <comp lib="8" loc="(1050,1010)" name="Text">
+      <a name="font" val="SansSerif plain 15"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="ImmType0 = branch and d"/>
+    </comp>
+    <comp lib="8" loc="(1050,1645)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="It's active always except for &quot;j&quot;, &quot;jr&quot;, &quot;b&quot;, &quot;store&quot; and &quot;out&quot;"/>
     </comp>
-    <comp lib="8" loc="(1053,1671)" name="Text">
+    <comp lib="8" loc="(1050,1670)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="The second or operand is used to activate RegWrite also with &quot;lui&quot; instruction "/>
-    </comp>
-    <comp lib="8" loc="(1054,1011)" name="Text">
-      <a name="font" val="SansSerif plain 15"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="ImmType0 = branch and d"/>
     </comp>
     <comp lib="8" loc="(1055,1075)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="ImmType1 = not a and (not(c and not d and not e))"/>
     </comp>
-    <comp lib="8" loc="(1057,1153)" name="Text">
+    <comp lib="8" loc="(1055,1150)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="ImmType = 00 -&gt; lui, jal and j"/>
     </comp>
-    <comp lib="8" loc="(1057,1173)" name="Text">
+    <comp lib="8" loc="(1055,1170)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="ImmType = 01 -&gt; b"/>
     </comp>
-    <comp lib="8" loc="(1057,1195)" name="Text">
+    <comp lib="8" loc="(1055,1195)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="ImmType = 10 -&gt; logical-arithmetical instructions"/>
     </comp>
-    <comp lib="8" loc="(1058,783)" name="Text">
+    <comp lib="8" loc="(1055,780)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="First xor input is for &quot;jalr&quot;, &quot;j&quot;, &quot;jr&quot; and &quot;b&quot; instrctions"/>
     </comp>
-    <comp lib="8" loc="(1059,809)" name="Text">
+    <comp lib="8" loc="(1055,805)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="Second xor input is for &quot;jal&quot; instruction"/>
     </comp>
-    <comp lib="8" loc="(1061,1301)" name="Text">
+    <comp lib="8" loc="(1060,1300)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="It's active only with a &quot;store&quot; instruction"/>
     </comp>
-    <comp lib="8" loc="(1074,1032)" name="Text">
+    <comp lib="8" loc="(1070,1030)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="ImmType0 = 1 only with &quot;b&quot; instruction"/>
     </comp>
-    <comp lib="8" loc="(1075,1096)" name="Text">
+    <comp lib="8" loc="(1075,1095)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="ImmType1 = 1 only with logical-arithmetical instructions"/>
     </comp>
-    <comp lib="8" loc="(1076,1114)" name="Text">
+    <comp lib="8" loc="(1075,1110)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="Nand used for excluding &quot;jal&quot; instruction"/>
     </comp>
-    <comp lib="8" loc="(1085,1429)" name="Text">
+    <comp lib="8" loc="(1085,1425)" name="Text">
       <a name="font" val="SansSerif plain 15"/>
       <a name="halign" val="left"/>
       <a name="text" val="It's active only with a &quot;load&quot; instruction&quot;"/>
@@ -1759,67 +1753,67 @@
       <a name="halign" val="left"/>
       <a name="text" val="b"/>
     </comp>
-    <comp lib="8" loc="(536,1353)" name="Text">
+    <comp lib="8" loc="(535,1350)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="a"/>
     </comp>
-    <comp lib="8" loc="(536,1394)" name="Text">
+    <comp lib="8" loc="(535,1390)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="d"/>
     </comp>
-    <comp lib="8" loc="(577,1096)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="e"/>
-    </comp>
-    <comp lib="8" loc="(579,1073)" name="Text">
+    <comp lib="8" loc="(575,1070)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="c"/>
     </comp>
-    <comp lib="8" loc="(579,1086)" name="Text">
+    <comp lib="8" loc="(575,1085)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not d"/>
+    </comp>
+    <comp lib="8" loc="(575,1095)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="e"/>
     </comp>
     <comp lib="8" loc="(585,820)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="e"/>
     </comp>
-    <comp lib="8" loc="(590,1363)" name="Text">
+    <comp lib="8" loc="(590,1360)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not b"/>
     </comp>
-    <comp lib="8" loc="(592,1383)" name="Text">
+    <comp lib="8" loc="(590,1380)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not c"/>
     </comp>
-    <comp lib="8" loc="(598,1666)" name="Text">
+    <comp lib="8" loc="(595,1650)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="not c"/>
+    </comp>
+    <comp lib="8" loc="(595,1665)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not d"/>
     </comp>
-    <comp lib="8" loc="(599,1653)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="not c"/>
-    </comp>
-    <comp lib="8" loc="(604,1636)" name="Text">
+    <comp lib="8" loc="(600,1635)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="b"/>
     </comp>
-    <comp lib="8" loc="(605,1621)" name="Text">
+    <comp lib="8" loc="(605,1620)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="a"/>
     </comp>
-    <comp lib="8" loc="(608,565)" name="Text">
+    <comp lib="8" loc="(605,565)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="a"/>
@@ -1829,57 +1823,57 @@
       <a name="halign" val="left"/>
       <a name="text" val="a"/>
     </comp>
-    <comp lib="8" loc="(610,582)" name="Text">
+    <comp lib="8" loc="(610,470)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="e"/>
     </comp>
-    <comp lib="8" loc="(613,473)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="e"/>
-    </comp>
-    <comp lib="8" loc="(613,492)" name="Text">
+    <comp lib="8" loc="(610,490)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="d"/>
     </comp>
-    <comp lib="8" loc="(616,1233)" name="Text">
+    <comp lib="8" loc="(610,580)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="e"/>
+    </comp>
+    <comp lib="8" loc="(615,1230)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="a"/>
     </comp>
-    <comp lib="8" loc="(616,1274)" name="Text">
+    <comp lib="8" loc="(615,1270)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="d"/>
     </comp>
-    <comp lib="8" loc="(670,1243)" name="Text">
+    <comp lib="8" loc="(670,1240)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not b"/>
     </comp>
-    <comp lib="8" loc="(672,1263)" name="Text">
+    <comp lib="8" loc="(670,1260)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not c"/>
     </comp>
-    <comp lib="8" loc="(681,1683)" name="Text">
+    <comp lib="8" loc="(680,1680)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not e"/>
     </comp>
-    <comp lib="8" loc="(682,515)" name="Text">
-      <a name="font" val="SansSerif plain 12"/>
-      <a name="halign" val="left"/>
-      <a name="text" val="not a"/>
-    </comp>
-    <comp lib="8" loc="(684,504)" name="Text">
+    <comp lib="8" loc="(680,500)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not c"/>
     </comp>
-    <comp lib="8" loc="(696,1414)" name="Text">
+    <comp lib="8" loc="(680,515)" name="Text">
+      <a name="font" val="SansSerif plain 12"/>
+      <a name="halign" val="left"/>
+      <a name="text" val="not a"/>
+    </comp>
+    <comp lib="8" loc="(695,1410)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="not e"/>
@@ -1889,7 +1883,7 @@
       <a name="halign" val="left"/>
       <a name="text" val="not a"/>
     </comp>
-    <comp lib="8" loc="(750,1691)" name="Text">
+    <comp lib="8" loc="(750,1690)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="1 iff opcode = 11000 (lui)"/>
@@ -1904,12 +1898,12 @@
       <a name="halign" val="left"/>
       <a name="text" val="not d"/>
     </comp>
-    <comp lib="8" loc="(776,1294)" name="Text">
+    <comp lib="8" loc="(775,1290)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="e"/>
     </comp>
-    <comp lib="8" loc="(822,436)" name="Text">
+    <comp lib="8" loc="(820,435)" name="Text">
       <a name="font" val="SansSerif plain 12"/>
       <a name="halign" val="left"/>
       <a name="text" val="b"/>
@@ -2066,14 +2060,12 @@
     <wire from="(800,1490)" to="(860,1490)"/>
     <wire from="(810,1000)" to="(830,1000)"/>
     <wire from="(810,690)" to="(810,760)"/>
-    <wire from="(810,760)" to="(810,830)"/>
+    <wire from="(810,760)" to="(810,840)"/>
     <wire from="(810,760)" to="(860,760)"/>
-    <wire from="(810,830)" to="(810,910)"/>
-    <wire from="(810,830)" to="(860,830)"/>
-    <wire from="(810,910)" to="(810,960)"/>
-    <wire from="(810,910)" to="(860,910)"/>
-    <wire from="(810,960)" to="(810,1000)"/>
-    <wire from="(810,960)" to="(860,960)"/>
+    <wire from="(810,840)" to="(810,930)"/>
+    <wire from="(810,840)" to="(860,840)"/>
+    <wire from="(810,930)" to="(810,1000)"/>
+    <wire from="(810,930)" to="(860,930)"/>
     <wire from="(840,650)" to="(860,650)"/>
     <wire from="(850,1280)" to="(860,1280)"/>
     <wire from="(850,500)" to="(860,500)"/>

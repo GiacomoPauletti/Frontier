@@ -43,7 +43,7 @@ Here follows the table of the signals for each instruction:
 
 X stands for "dont't care", ? stands for "work in progress".  
 The following signals have been omitted because their columns were equivalent to other columns:
-* PcSrc, WriteRa, AluSrc1: equivalent to Branch
+* WriteRa, AluSrc1: equivalent to Branch
 * MemRead: equivalent to MemToReg
 
 ### ALU OPERATION
