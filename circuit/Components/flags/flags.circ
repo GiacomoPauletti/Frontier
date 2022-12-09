@@ -130,6 +130,18 @@
       <a name="size" val="30"/>
     </comp>
     <comp lib="6" loc="(630,270)" name="74175"/>
+    <comp lib="8" loc="(712,400)" name="Text">
+      <a name="text" val="using the 74175 because there is no pre build 74173"/>
+    </comp>
+    <comp lib="8" loc="(722,420)" name="Text">
+      <a name="text" val="only difference is that this has an asynchronous reset"/>
+    </comp>
+    <comp lib="8" loc="(722,450)" name="Text">
+      <a name="text" val="the other on (74173) has enable pin, so and gate used"/>
+    </comp>
+    <comp lib="8" loc="(722,475)" name="Text">
+      <a name="text" val="in this circuit is not necessary"/>
+    </comp>
     <wire from="(1000,250)" to="(1000,310)"/>
     <wire from="(1000,250)" to="(1010,250)"/>
     <wire from="(310,230)" to="(330,230)"/>

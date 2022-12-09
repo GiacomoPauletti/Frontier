@@ -78,9 +78,8 @@
     <a name="simulationFrequency" val="1.0"/>
     <appear>
       <text dominant-baseline="central" font-family="SansSerif" font-size="12" text-anchor="middle" x="258" y="250">out</text>
-      <text dominant-baseline="central" font-family="SansSerif" font-size="12" text-anchor="middle" x="267" y="268">=</text>
-      <text dominant-baseline="central" font-family="SansSerif" font-size="12" text-anchor="middle" x="264" y="219">ovf</text>
-      <text dominant-baseline="central" font-family="SansSerif" font-size="12" text-anchor="middle" x="264" y="230">Cout</text>
+      <text dominant-baseline="central" font-family="SansSerif" font-size="12" text-anchor="middle" x="256" y="228">flags</text>
+      <text dominant-baseline="central" font-family="SansSerif" font-size="12" text-anchor="middle" x="257" y="269">Cout</text>
       <polyline fill="none" points="170,150 170,220 230,250 170,280 170,350 280,290 280,210" stroke="#000000"/>
       <polyline fill="none" points="170,150 280,210" stroke="#000000"/>
       <text dominant-baseline="central" font-family="SansSerif" font-size="8" text-anchor="middle" x="225" y="197">ALUOpExt</text>
@@ -94,10 +93,9 @@
       <circ-port dir="in" pin="330,1160" x="170" y="190"/>
       <circ-port dir="in" pin="330,1310" x="170" y="310"/>
       <circ-port dir="in" pin="920,280" x="230" y="180"/>
-      <circ-port dir="out" pin="1770,920" x="280" y="270"/>
       <circ-port dir="out" pin="1910,1320" x="280" y="250"/>
-      <circ-port dir="out" pin="2040,1910" x="280" y="230"/>
-      <circ-port dir="out" pin="2040,2210" x="280" y="220"/>
+      <circ-port dir="out" pin="2040,1910" x="280" y="270"/>
+      <circ-port dir="out" pin="2040,2140" x="280" y="230"/>
     </appear>
     <comp lib="0" loc="(1130,2540)" name="Pin">
       <a name="appearance" val="NewPins"/>
@@ -111,11 +109,15 @@
       <a name="incoming" val="16"/>
       <a name="spacing" val="2"/>
     </comp>
-    <comp lib="0" loc="(1770,920)" name="Pin">
-      <a name="appearance" val="NewPins"/>
+    <comp lib="0" loc="(1870,2160)" name="Constant">
+      <a name="value" val="0x0"/>
+    </comp>
+    <comp lib="0" loc="(1890,2140)" name="Splitter">
+      <a name="appear" val="center"/>
       <a name="facing" val="west"/>
-      <a name="label" val="A_eq_B"/>
-      <a name="output" val="true"/>
+      <a name="fanout" val="4"/>
+      <a name="incoming" val="4"/>
+      <a name="spacing" val="2"/>
     </comp>
     <comp lib="0" loc="(1890,320)" name="Pin">
       <a name="appearance" val="NewPins"/>
@@ -136,11 +138,12 @@
       <a name="label" val="Cout"/>
       <a name="output" val="true"/>
     </comp>
-    <comp lib="0" loc="(2040,2210)" name="Pin">
+    <comp lib="0" loc="(2040,2140)" name="Pin">
       <a name="appearance" val="NewPins"/>
       <a name="facing" val="west"/>
-      <a name="label" val="Overflow"/>
+      <a name="label" val="Flags"/>
       <a name="output" val="true"/>
+      <a name="width" val="4"/>
     </comp>
     <comp lib="0" loc="(330,1160)" name="Pin">
       <a name="appearance" val="NewPins"/>
@@ -301,7 +304,7 @@
     <comp lib="1" loc="(1450,2210)" name="AND Gate">
       <a name="size" val="30"/>
     </comp>
-    <comp lib="1" loc="(1770,920)" name="AND Gate">
+    <comp lib="1" loc="(1800,2000)" name="AND Gate">
       <a name="inputs" val="4"/>
     </comp>
     <comp lib="12" loc="(1090,1020)" name="sn74ls181"/>
@@ -322,46 +325,61 @@
       <a name="shift" val="lr"/>
       <a name="width" val="16"/>
     </comp>
-    <comp lib="8" loc="(1049,2169)" name="Text">
+    <comp lib="8" loc="(1045,2165)" name="Text">
       <a name="text" val="1"/>
     </comp>
-    <comp lib="8" loc="(1051,2148)" name="Text">
+    <comp lib="8" loc="(1050,2145)" name="Text">
       <a name="text" val="0"/>
     </comp>
-    <comp lib="8" loc="(1058,2111)" name="Text">
-      <a name="text" val="MSB di B"/>
+    <comp lib="8" loc="(1055,2110)" name="Text">
+      <a name="text" val="MSB of B"/>
     </comp>
-    <comp lib="8" loc="(1146,260)" name="Text">
+    <comp lib="8" loc="(1145,260)" name="Text">
       <a name="font" val="SansSerif bold 14"/>
       <a name="text" val="bits 0 to 3 are ALUOp, bit 4 is Mode, bit 5 is Cin"/>
     </comp>
     <comp lib="8" loc="(1165,2110)" name="Text">
-      <a name="text" val="MSB di A"/>
+      <a name="text" val="MSB of A"/>
     </comp>
-    <comp lib="8" loc="(1168,2144)" name="Text">
+    <comp lib="8" loc="(1165,2140)" name="Text">
       <a name="text" val="0"/>
     </comp>
-    <comp lib="8" loc="(1169,2272)" name="Text">
+    <comp lib="8" loc="(1165,2270)" name="Text">
       <a name="text" val="if MSB_A=MSB_B=!MSB_R then Overflow = 1"/>
     </comp>
-    <comp lib="8" loc="(1175,2159)" name="Text">
+    <comp lib="8" loc="(1175,2155)" name="Text">
       <a name="text" val="1"/>
     </comp>
     <comp lib="8" loc="(1250,2315)" name="Text">
       <a name="font" val="SansSerif bold 20"/>
       <a name="text" val="OVERFLOW DETECTOR"/>
     </comp>
-    <comp lib="8" loc="(1286,2116)" name="Text">
-      <a name="text" val="MSB del ris"/>
+    <comp lib="8" loc="(1285,2115)" name="Text">
+      <a name="text" val="MSB of result (R)"/>
     </comp>
-    <comp lib="8" loc="(1291,2175)" name="Text">
+    <comp lib="8" loc="(1290,2175)" name="Text">
       <a name="text" val="0"/>
     </comp>
-    <comp lib="8" loc="(1297,2147)" name="Text">
+    <comp lib="8" loc="(1295,2145)" name="Text">
       <a name="text" val="1"/>
     </comp>
-    <comp lib="8" loc="(1482,2247)" name="Text">
+    <comp lib="8" loc="(1480,2245)" name="Text">
       <a name="text" val="Only when performing addition (Cin = 1)"/>
+    </comp>
+    <comp lib="8" loc="(1782,2200)" name="Text">
+      <a name="text" val="overflow"/>
+    </comp>
+    <comp lib="8" loc="(1794,2116)" name="Text">
+      <a name="text" val="&gt; or &lt;"/>
+    </comp>
+    <comp lib="8" loc="(1860,2097)" name="Text">
+      <a name="text" val="="/>
+    </comp>
+    <comp lib="8" loc="(2005,2035)" name="Text">
+      <a name="text" val="A &gt; B iff A - B &gt; 0 -&gt; MSB of R = 0"/>
+    </comp>
+    <comp lib="8" loc="(2007,2061)" name="Text">
+      <a name="text" val="A &lt; B iff A - B &lt; 0 -&gt; MSB of R = 1"/>
     </comp>
     <wire from="(1000,1050)" to="(1000,1470)"/>
     <wire from="(1000,1050)" to="(1020,1050)"/>
@@ -500,8 +518,10 @@
     <wire from="(1220,1530)" to="(1220,1550)"/>
     <wire from="(1220,1530)" to="(1230,1530)"/>
     <wire from="(1220,1550)" to="(1590,1550)"/>
-    <wire from="(1220,1970)" to="(1220,2210)"/>
+    <wire from="(1220,1970)" to="(1220,2120)"/>
     <wire from="(1220,1970)" to="(1240,1970)"/>
+    <wire from="(1220,2120)" to="(1220,2210)"/>
+    <wire from="(1220,2120)" to="(1870,2120)"/>
     <wire from="(1220,2210)" to="(1240,2210)"/>
     <wire from="(1220,700)" to="(1220,800)"/>
     <wire from="(1220,700)" to="(1250,700)"/>
@@ -513,17 +533,19 @@
     <wire from="(1240,1960)" to="(1250,1960)"/>
     <wire from="(1240,1970)" to="(1630,1970)"/>
     <wire from="(1280,2220)" to="(1420,2220)"/>
-    <wire from="(1290,1090)" to="(1590,1090)"/>
-    <wire from="(1290,1510)" to="(1310,1510)"/>
+    <wire from="(1290,1090)" to="(1530,1090)"/>
+    <wire from="(1290,1510)" to="(1340,1510)"/>
     <wire from="(1310,1940)" to="(1320,1940)"/>
-    <wire from="(1310,690)" to="(1640,690)"/>
-    <wire from="(1310,930)" to="(1310,1510)"/>
-    <wire from="(1310,930)" to="(1720,930)"/>
-    <wire from="(1320,940)" to="(1320,1940)"/>
-    <wire from="(1320,940)" to="(1720,940)"/>
+    <wire from="(1310,690)" to="(1670,690)"/>
+    <wire from="(1320,1940)" to="(1320,2020)"/>
+    <wire from="(1320,2020)" to="(1750,2020)"/>
+    <wire from="(1340,1510)" to="(1340,2010)"/>
+    <wire from="(1340,2010)" to="(1750,2010)"/>
     <wire from="(1410,2200)" to="(1420,2200)"/>
     <wire from="(1410,400)" to="(1410,2200)"/>
-    <wire from="(1450,2210)" to="(2040,2210)"/>
+    <wire from="(1450,2210)" to="(1840,2210)"/>
+    <wire from="(1530,1090)" to="(1530,1990)"/>
+    <wire from="(1530,1990)" to="(1750,1990)"/>
     <wire from="(1560,1130)" to="(1560,1290)"/>
     <wire from="(1560,1290)" to="(1630,1290)"/>
     <wire from="(1560,1310)" to="(1560,1620)"/>
@@ -540,8 +562,6 @@
     <wire from="(1590,1230)" to="(1630,1230)"/>
     <wire from="(1590,1370)" to="(1590,1550)"/>
     <wire from="(1590,1370)" to="(1630,1370)"/>
-    <wire from="(1590,910)" to="(1590,1090)"/>
-    <wire from="(1590,910)" to="(1720,910)"/>
     <wire from="(1600,1210)" to="(1630,1210)"/>
     <wire from="(1600,1390)" to="(1600,2050)"/>
     <wire from="(1600,1390)" to="(1630,1390)"/>
@@ -556,14 +576,20 @@
     <wire from="(1620,790)" to="(1620,1170)"/>
     <wire from="(1630,1450)" to="(1630,1970)"/>
     <wire from="(1630,780)" to="(1630,1150)"/>
-    <wire from="(1640,690)" to="(1640,900)"/>
-    <wire from="(1640,900)" to="(1720,900)"/>
     <wire from="(1650,1310)" to="(1760,1310)"/>
+    <wire from="(1670,1980)" to="(1750,1980)"/>
+    <wire from="(1670,690)" to="(1670,1980)"/>
     <wire from="(1730,1330)" to="(1730,2470)"/>
     <wire from="(1730,1330)" to="(1760,1330)"/>
     <wire from="(1770,1270)" to="(1770,1300)"/>
     <wire from="(1770,1270)" to="(1890,1270)"/>
     <wire from="(1790,1320)" to="(1910,1320)"/>
+    <wire from="(1800,2000)" to="(1820,2000)"/>
+    <wire from="(1820,2000)" to="(1820,2100)"/>
+    <wire from="(1820,2100)" to="(1870,2100)"/>
+    <wire from="(1840,2140)" to="(1840,2210)"/>
+    <wire from="(1840,2140)" to="(1870,2140)"/>
+    <wire from="(1890,2140)" to="(2040,2140)"/>
     <wire from="(1890,320)" to="(1890,1270)"/>
     <wire from="(330,1160)" to="(340,1160)"/>
     <wire from="(330,1310)" to="(350,1310)"/>
