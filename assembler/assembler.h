@@ -1,7 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <ctype.h>
+
+#define MAX_BIN_DIGITS 32   // dimension of int = 4 byte = 2^32 (so 32 bit)
+#define MAX_OCT_DIGITS 10   // 1 octal "bit" represent 3 binary bit -> 32 / 3 = 10 (almost)
+#define MAX_DEC_DIGITS 10   // 2^32 is made of 10 decimal digits
+#define MAX_HEX_DIGITS 8    // 1 hex "bit" represent 4 binary bit -> 32 / 4 = 8
 
 // using decimal not hexadecimal
 
@@ -76,7 +82,7 @@ RegisterCode registercode =
 */
 
 
-#define MAX_TOKENS 4    // opcode + operand0 + comma + operand1 (parenthesis aren't allowed because they are useless)
+#define MAX_TOKENS 5    // opcode + operand0 + comma + operand1 (parenthesis aren't allowed because they are useless)
 //#define MIN_TOKEN_LEN 2
 #define MAX_TOKEN_LEN 10
 
@@ -86,9 +92,8 @@ RegisterCode registercode =
 
 typedef struct tokenType
 {
-    char type;
-    int sign;
-    int dec_number;
+    int type;
+    int number;
 } TokenType_t;
 
 #define POSITIVE_SIGN 1
@@ -97,7 +102,7 @@ typedef struct tokenType
 typedef struct token
 {
     int token_length;
-    TokenType token_type;
+    TokenType_t *token_type;
     char token[MAX_TOKEN_LEN + 1];
 } Token_t;
 
@@ -106,6 +111,7 @@ typedef struct token
 #define OK_TOO_MANY 1
 #define INTERNAL_ERROR -1
 #define NOT_OK_TOO_LONG -2
+#define NOT_OK_INVALID_TOKEN -4
 
 /*  TOKENIZE
  *  takes an instruction and save each significant part (opcode, operands or immediate) into Token_t variables.
@@ -123,7 +129,7 @@ typedef struct token
  *          - NOT_OK_TOO_LONG if it wasn't possible to complete the operation due to a too long token
  *      
 */
-int tokenize_instruction(char *instruction, Token_t tokens[MAX_TOKENS], int *filled_tokens, Token_t *invalid_token);
+int tokenize_instruction(char *instruction, Token_t **tokens, int *filled_tokens, Token_t *invalid_token);
 
 /*  GET_NEXT_TOKEN
  *  get a token from the instruction
@@ -158,10 +164,11 @@ int get_next_token(char *instruction, int *token_length);
  *  arguments: 
  *      - tokens (Token_t *): array of structs Token_t, each one is a token (+ it's length)
  *      - token_number (int): number of tokens to check
+ *      - invalid_token (Token_t *): pointer to the invalid token
  *  return value:
  *      
 */
-int syntax_check(Token_t *tokens, int token_number);
+int syntax_check(Token_t **tokens, int token_number, Token_t *invalid_token);
 
 
 /*  _SYNTAX_CHECK_OPCODE
@@ -200,6 +207,13 @@ int _syntax_check_operand(Token_t *token);
 */
 int _syntax_check_register(Token_t *token);
 
+
+#define NO_BASE    -1
+#define BIN_BASE    2
+#define OCT_BASE    8
+#define DEC_BASE    10
+#define HEX_BASE    16
+
 /*  _SYNTAX_CHECK_IMMEDIATE
  *  check if the immediate syntax is correct.
  *  This syntax is more complex than other syntaxes:
@@ -225,33 +239,53 @@ int _syntax_check_register(Token_t *token);
  *      - NOT_OK_INVALID_TOKEN if its syntax is incorrect
  *      
 */
-
-#define NO_BASE    -1
-#define BIN_BASE    0
-#define OCT_BASE    1
-#define DEC_BASE    2
-#define HEX_BASE    3
-
 int _syntax_check_immediate(Token_t *token);
 
-/*  _PRINT_TOKENS
- *  local function used for printing tokens of a token array
- * 
- *  arguments: 
- *      - tokens (Token_t *): array of structs Token_t, each one will be a token (+ it's length)
- *      - token_number (int): number of tokens to print
- *  return value:
- *      - always 0
- *      
-*/
-int _print_tokens(Token_t *tokens, int token_number);
 
-/*  _DEBUG_TOKEN
- *  used to debug tokenize_instruction and all tokenization process
+/*  INIT_TOKEN
+ *  initialize properly a token
  * 
  *  arguments: 
- *
- *  return value:
+ *  return value (Token_t *):
+ *      - initialized token if successfully allocated
+ *      - NULL if unable to malloc it
  *      
 */
-int _debug_token()
+Token_t* init_token();
+
+/*  INIT_TOKEN_ARRAY
+ *  initialize properly a token array
+ * 
+ *  arguments: 
+ *      - token_number (int): number of tokens in the array
+ *  return value (Token_t **):
+ *      - initialized token array if successfully allocated
+ *      - NULL if unable to malloc it
+ *      
+*/
+Token_t ** init_token_array(int token_number);
+
+
+/*  FREE_TOKEN
+ *  free properly a token
+ * 
+ *  arguments: 
+ *      - token (Token_t *): pointer to token to free
+ *  return value (Token_t **):
+ *      - OK if succesfull
+ *      - INTERNAL_ERROR if error
+ *      
+*/
+int free_token(Token_t *token);
+
+/*  FREE_TOKEN_ARRAY
+ *  free properly a token array
+ * 
+ *  arguments: 
+ *      - tokens (Token_t **): array of tokens to free
+ *  return value (Token_t **):
+ *      - OK if succesfull
+ *      - INTERNAL_ERROR if error
+ *      
+*/
+int free_token_array(Token_t **tokens, int token_number);
