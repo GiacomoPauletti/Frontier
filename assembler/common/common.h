@@ -43,8 +43,19 @@ typedef struct token
 typedef struct token_node
 {
     Token_t *token;
-    Token_t *next;
+    TokenNode_t *next;
 } TokenNode_t;
+
+// TokensNode_t: used for representing an instruction/directive of a code
+// Instructions are linked by the next field
+typedef struct tokens_node
+{
+    Token_t **tokens;
+    int token_number;
+    TokenNode_t *next;
+} TokensNode_t;
+
+extern TokensNode_t* pending_instructions;
 
 #define OK 0
 #define OK_TOO_MANY 1
@@ -87,6 +98,14 @@ Token_t ** init_token_array(int token_number);
 */
 TokenNode_t* init_token_node();
 
+/*  INIT_MACRO_ARRAY
+ *  initialize properly the tokens_node
+ * 
+ *  arguments:
+ *  return value (TokensNode_t): the initialized tokens node
+*/
+TokensNode_t* init_tokens_node();
+
 /*  FREE_TOKEN
  *  free properly a token
  * 
@@ -111,14 +130,59 @@ int free_token(Token_t *token);
 */
 int free_token_array(Token_t **tokens, int token_number);
 
+/*  FREE_TOKEN_NODE
+ *  free properly a token node
+ * 
+ *  arguments: 
+ *      - token_node (TokenNode_t *): pointer to token node to free
+ *      - is_free_token (int): 1 if token pointed by token_node has to be freed, else 0
+ *  return value (TokenNode_t *):   pointer to the next node in list
+ *      
+*/
+TokenNode_t* free_token_node(TokenNode_t *token_node, int is_free_token);
+
+/*  FREE_TOKEN_LIST
+ *  free properly a token list
+ * 
+ *  arguments: 
+ *      - head (TokenNode_t *): pointer to token node list to free
+ *      - is_free_tokens (int): 1 if tokens pointed by the list have to be freed, else 0
+ *  return value (int):
+ *      - OK if succesfull
+ *      - INTERNAL_ERROR if error
+ *      
+*/
+int free_token_list(TokenNode_t *head, int is_free_tokens);
+
+/*  FREE_TOKENS_NODE
+ *  free properly a tokens node
+ * 
+ *  arguments: 
+ *      - tokens_node (TokensNode_t *): pointer to token to free
+ *      - is_free_token (int): 1 if tokens pointed by tokens_node have to be freed, else 0
+ *  return value (TokensNode_t *):   pointer to the next node in list
+ * 
+*/
+TokensNode_t* free_tokens_node(TokensNode_t *tokens_node, int is_free_token);
+
+/*  FREE_TOKEN_LIST
+ *  free properly a tokens list
+ * 
+ *  arguments: 
+ *      - head (TokenNode_t *): pointer to tokens node list to free
+ *      - is_free_tokens (int): 1 if tokens pointed by the list have to be freed, else 0
+ *  return value (int):
+ *      - OK if succesfull
+ *      - INTERNAL_ERROR if error
+ *      
+*/
+int free_token_list(TokenNode_t *head, int is_free_tokens);
 // ----------------------- MACRO -----------------------
 
 #define MAX_LABEL_LEN 15    // length of macro label
-#define MACRO_DEFINE "#define"  // keyword to define a macro
+#define MACRO_DEFINITION_DIR "#define"  // directive for macro definition
 #define MINIMUM_MACRO_TOKENS 3  // minimum number of tokens in a macro definition
 #define MINIMUM_MACROS 4    // minimum number of macros in code_macros
-
-#define NOT_A_MACRO -4  // error raised by _syntax_macro_check if that's not a macro definition
 
 // at the moment a macro can be only a placeholder for a number
 typedef struct macro
@@ -218,6 +282,58 @@ int free_macro(Macro_t *macro);
  *      
 */
 int free_macro_array(Macro_t **macros, int macro_number);
+
+//===================== MACROS FOR SEGSET DIRECTIVE ====================
+#define SEGMENT_SET_DIR "#segset"   // directive for segment set
+#define MINIMUM_SEGSET_TOKENS 2
+#define MAXIMUM_SEGSET_TOKENS 3
+
+#define NO_SEGMENT 0
+#define CODE_SEGMENT 1
+#define DATA_SEGMENT 2
+
+#define MAX_SEG_SPACE 0xFFFF
+// tells which is the current segment
+// used to place data (data/instructions) in the correct place while assembling the code
+extern unsigned short curr_segment;
+
+// tells if "#segset data ..." directive has been already written
+extern unsigned short is_dataseg_set;
+// beginning address of data segment
+extern unsigned short dataseg_address;
+
+// tells if "#segset code ..." directive has been already written
+extern unsigned short is_codeseg_set;
+// beginning address of code segment
+extern unsigned short codeseg_address;
+
+//================== MACROS FOR ALLOCATION DIRECTIVES =================
+
+#define BYTE_ALLOCATION_DIR "#byte"     // directive for byte allocation
+#define WORD_ALLOCATION_DIR "#word"     // directive for word allocation
+#define MINIMUM_ALLOCATION_TOKENS 3
+#define MAXIMUM_ALLOCATION_TOKENS 4
+
+// first free data address (starting from dataseg_address)
+extern unsigned short free_data_address;
+extern unsigned short free_code_address;
+
+#define NOT_A_DIRECTIVE -4  // error raised by _syntax_macro_check if that's not a macro definition
+
+//================ MACROS JUST FOR FRONTIER COMPUTER ==================
+
+#define BYTE_DIMENSION  8    // number of bits in a byte 
+#define WORD_DIMENSION  16    // number of bits in a word
+#define WORD_IN_BYTE    ( WORD_DIMENSION / BYTE_DIMENSION )     // number of bytes in a word
+
+#define ADDRESS_LENGTH 16
+
+#define LUI_IMMEDIATE_LENGTH 10
+#define BRANCH_IMMEDIATE_LENGTH 8
+#define ADDI_IMMEDIATE_LENGTH 6
+
+#define LOWER_IMMEDIATE_MASK 63     // 0b0000000000 111111
+#define UPPER_IMMEDIATE_MASK (0xFFFF - LOWER_IMMEDIATE_MASK)
 
 /*  STOLOWER
  *  set a string to lowercase

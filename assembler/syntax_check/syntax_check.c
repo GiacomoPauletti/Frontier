@@ -13,8 +13,79 @@
 int _is_token_label(Token_t *token);
 
 /*  _SYNTAX_CHECK_MACRO
- *  checks if the token sequence (instruction) is a macro definition
- *  If it is a proper macro definition, updates code_macros (and macros_number)
+ *  checks if the token sequence (directive) is macro definition.
+ *  If it is a proper macro definition, updates code_macros (and macros_number).
+ *  
+ *  
+ *  arguments:
+ *      - tokens (Token_t *): tokens to be checked
+ *      - token_number (int): number of tokens to check
+ *      - invalid_token (Token_t *): wrong token of the sequence
+ *  return value:
+ *      - OK if it is a valid macro definition
+ *      - NOT_OK_INVALID_TOKEN if it is not
+ *      - INTERNAL_ERROR if an unexpecter error occurred (ie: tokens == NULL)
+ *
+ */
+int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_token);
+
+/*  _SYNTAX_CHECK_SEGSET
+ *  checks if the token sequence (directive) is segment set (or segment setup).
+ *  If it is a proper segment set, updates the corresponding segment starting address
+ *  
+ *  
+ *  arguments:
+ *      - tokens (Token_t *): tokens to be checked
+ *      - token_number (int): number of tokens to check
+ *      - invalid_token (Token_t *): wrong token of the sequence
+ *  return value:
+ *      - OK if it is a valid segment set directive
+ *      - NOT_OK_INVALID_TOKEN if it is not
+ *      - INTERNAL_ERROR if an unexpecter error occurred (ie: tokens == NULL)
+ *
+ */
+int _syntax_check_segset(Token_t **tokens, int token_number, Token_t *invalid_token);
+
+/*  _SYNTAX_CHECK_ALLOCATION
+ *  checks if the token sequence (instruction) is data allocation
+ *  If it is a proper data allocation, translates the directive in a series of instruction to load the data in memory
+ *  
+ *  
+ *  arguments:
+ *      - tokens (Token_t *): tokens to be checked
+ *      - token_number (int): number of tokens to check
+ *      - invalid_token (Token_t *): wrong token of the sequence
+ *      - dimension (int): dimension of the data to be allocated. Can be BYTE_DIMENSION or WORD_DIMENSION since it works on a 16 bit CPU.
+ *  return value:
+ *      - OK if it is a valid data allocation directive
+ *      - NOT_OK_INVALID_TOKEN if it is not
+ *      - INTERNAL_ERROR if an unexpecter error occurred (ie: tokens == NULL)
+ *
+ */
+int _syntax_check_allocation(Token_t **tokens, int token_number, Token_t *invalid_token, int dimension);
+
+/*  _SETUP_EXPANSION
+ *  function called by _syntax_check_allocation to expand the directive in a series of instruction to load the data in memory
+ *
+ *  arguments:
+ *      - tokens (Token_t *): directive to be expanded
+ *      - token_number (int): number of tokens in directive
+ *      - invalid_token (Token_t *): wrong token of the sequence
+ *      - dimension (int): dimension of the data to be allocated. Can be BYTE_DIMENSION or WORD_DIMENSION since it works on a 16 bit CPU.
+ *  return value:
+ *      - OK if expansion setup worked correctly
+ *      - NOT_OK_INVALID_TOKEN if it did not
+ *      - INTERNAL_ERROR if an unexpecter error occurred
+ *
+*/
+int _setup_expansion(Token_t **tokens, int token_number, Token_t *invalid_token, int dimension);
+
+/*  _SYNTAX_CHECK_DIRECTIVES
+ *  checks if the token sequence (instruction) is preprocessore directive.
+ *  If it is a proper macro definition, calls _syntax_check_macro
+ *  If it is a proper segmentatin directive, ...
+ *  If it is a proper data allocation directive, ...
+ *  
  *  
  *  arguments:
  *      - tokens (Token_t *): tokens to be checked
@@ -26,7 +97,7 @@ int _is_token_label(Token_t *token);
  *      - INTERNAL_ERROR if an unexpecter error occurred (ie: tokens == NULL)
  *
  */
-int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_token);
+int _syntax_check_directives(Token_t **tokens, int token_number, Token_t *invalid_token);
 
 /*  _SYNTAX_CHECK_OPCODE
  *  assert opcode is only alphabetic and put it lowercase
@@ -123,7 +194,7 @@ int _is_token_label(Token_t *token)
     return exit_status;
 }
 
-int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_token)
+int _syntax_check_directives(Token_t **tokens, int token_number, Token_t *invalid_token)
 {
     int exit_status;
     int exit_status_routine;
@@ -131,12 +202,6 @@ int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_tok
     Macro_t *macro;
 
     // this checks aren't necessary but I wanted to be sure
-    if ( tokens == NULL )
-    {
-        exit_status = INTERNAL_ERROR;
-        return exit_status;
-    }
-
     if ( tokens == NULL || invalid_token == NULL )
     {
         exit_status = INTERNAL_ERROR;
@@ -145,17 +210,44 @@ int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_tok
 
     if ( token_number > MAX_TOKENS )
     {
-        printf("[_syntax_check_macro] Invalid token_number: token_number > MAX_TOKENS\n");
+        printf("[_syntax_check_directives] Invalid token_number: token_number > MAX_TOKENS\n");
         exit_status = INTERNAL_ERROR;
         return exit_status;
     }
     // end of checks
 
-    if ( strcmp(tokens[0] -> token, MACRO_DEFINE) != 0 )    // this is not a macro definition
+    if ( strncmp(tokens[0] -> token, MACRO_DEFINITION_DIR, tokens[0] -> token_length) == 0 )    // this is a macro definition
     {
-        exit_status = NOT_A_MACRO;
+        exit_status_routine = _syntax_check_macro(tokens, token_number, invalid_token);
+    }
+
+    else if ( strncmp(tokens[0] -> token, SEGMENT_SET_DIR, tokens[0] -> token_length) == 0 )
+    {
+        exit_status_routine = _syntax_check_segset(tokens, token_number, invalid_token);
+    }
+
+    else if ( strncmp(tokens[0] -> token, BYTE_ALLOCATION_DIR,  tokens[0] -> token_length) == 0 )
+    {
+        exit_status_routine = _syntax_check_allocation(tokens, token_number, invalid_token, BYTE_DIMENSION);
+    }
+    else if ( strncmp(tokens[0] -> token, WORD_ALLOCATION_DIR,  tokens[0] -> token_length) == 0 )
+    {
+        exit_status_routine = _syntax_check_allocation(tokens, token_number, invalid_token, WORD_DIMENSION);
+    }
+
+    else
+    {
+        exit_status = NOT_A_DIRECTIVE;
         return exit_status;
     }
+}
+
+int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_token)
+{
+    int exit_status, exit_status_routine;
+    int curr_keyword;
+
+    Macro_t *macro;
 
     // a macro definition has to be 3 elements at least (condition 1) and has to start with MACRO_DEFINE macro (condition 2)
     if ( token_number >= MINIMUM_MACRO_TOKENS )
@@ -164,8 +256,8 @@ int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_tok
         exit_status_routine = _is_token_label(tokens[1]);
         if ( exit_status_routine != OK )
         {
-            printf("[_syntax_check_macro] Error: instruction starting with token definition but wrong macro label\n");
-            printf("[_syntax_check_macro] Error: token which caused this error: %s\n", tokens[1] -> token);
+            write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_macro] Error: instruction starting with token definition but wrong macro label\n");
+            printf(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_macro] Error: token which caused this error: %s\n", tokens[1] -> token);
             memcpy(invalid_token -> token, tokens[1] -> token, tokens[1] -> token_length);
             invalid_token -> token_length = tokens[1] -> token_length;
             exit_status = NOT_OK_INVALID_TOKEN;
@@ -216,7 +308,7 @@ int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_tok
         
         if ( exit_status_routine != OK )
         {
-            printf("[_syntax_check_macro] Error: unable to update code_macros. Current macro definition (%.*s) wasn't completed\n", 
+            write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_macro] Error: unable to update code_macros. Current macro definition (%.*s) wasn't completed\n", 
             macro -> label_length, macro -> label);
 
             exit_status = INTERNAL_ERROR;
@@ -225,13 +317,412 @@ int _syntax_check_macro(Token_t **tokens, int token_number, Token_t *invalid_tok
     } 
     else // if token_number < MINIMUM_MACRO_TOKENS 
     {
-        printf("_syntax_check_macro] Invalid token_number: token_number < MINIMUM_MACRO_TOKENS\n");
+        printf(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_macro] Invalid token_number: token_number < MINIMUM_MACRO_TOKENS\n");
 
         exit_status = INTERNAL_ERROR;
         return exit_status;
     }
 
     return OK;
+
+
+}
+
+int _syntax_check_segset(Token_t **tokens, int token_number, Token_t *invalid_token)
+{
+    int exit_status, exit_status_routine;
+    int is_valid_segset = 0;
+    unsigned short *seg_address;
+
+
+    if ( token_number >= MINIMUM_SEGSET_TOKENS )
+    {
+        if ( token_number > MAXIMUM_SEGSET_TOKENS )
+        {
+            write_log(SYNTAX_CHECK_LOG | WARNING_LOG, "[_syntax_check_segset] Warning: too many arguments, exprected %d. Ignoring other arguments.\n", MINIMUM_SEGSET_TOKENS);
+        }
+
+        // data segment set
+        if ( strncmp(tokens[1] -> token, "data", tokens[1] -> token_length) == 0 )
+        {
+            if ( is_dataseg_set == 1 )  // "#segset data ..." has been already written
+            {
+                write_log(SYNTAX_CHECK_LOG | WARNING_LOG, "[_syntax_check_segset] Warning: there has been already a data segment set. Ignoring data address of this directive\n");
+                
+                exit_status = OK;
+                return exit_status;
+            }
+            curr_segment = DATA_SEGMENT; // following directives must be data allocation
+            is_dataseg_set = 1;
+
+            is_valid_segset = 1;
+            seg_address = &dataseg_address; // used later to update segment beginning address
+        }
+        else if ( strncmp(tokens[1] -> token, "code", tokens[1] -> token_length) == 0 )
+        {
+            if ( is_codeseg_set == 1 )  // "#segset data ..." has been already written
+            {
+                write_log(SYNTAX_CHECK_LOG | WARNING_LOG, "[_syntax_check_segset] Warning: there has been already a code segment set. Ignoring code address of this directive\n");
+                
+                exit_status = OK;
+                return exit_status;
+            }
+            curr_segment = CODE_SEGMENT; // following directives must be instructions
+            is_codeseg_set = 1;
+
+            is_valid_segset = 1;
+            seg_address = &codeseg_address; // used later to update segment beginning address
+
+        }
+
+        // following code is done by all segset types (if it is a valid one)
+        if ( is_valid_segset == 1 )
+        {
+            if ( token_number >= MAXIMUM_SEGSET_TOKENS )    // if there is a segment address it is check and translated into decimal
+            {
+                exit_status_routine = _syntax_check_immediate(tokens[2]); 
+            }
+
+            if ( exit_status_routine == OK ) 
+            {
+                if ( tokens[2] -> token_type -> number < 0 || tokens[2] -> token_type -> number > MAX_SEG_SPACE ) 
+                {
+                    write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_segset] Critical warning: invalid segment address. Using default one\n");
+                }
+                else
+                {
+                    *seg_address = tokens[2] -> token_type -> number;
+                }
+            }
+            else    // exit_status_routine != OK
+            {
+                write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_segset] Error: invalid segment address. Aborting.\n");
+
+                exit_status = INTERNAL_ERROR;
+                return exit_status;
+            }
+
+        }
+        else // is_valid_segset == 0
+        {
+            write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_segset] Error: invalid segment set. Aborting.\n");
+
+            exit_status = INTERNAL_ERROR;
+            return exit_status;
+        }
+
+        exit_status = OK;
+        return exit_status;
+        
+    }    
+    else // if token_number < MINIMUM_SEGSET_TOKENS 
+    {
+            printf(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_segset] Invalid token_number: token_number < MINIMUM_SEGSET_TOKENS\n");
+
+            exit_status = INTERNAL_ERROR;
+            return exit_status;
+
+    }
+}
+
+int _syntax_check_allocation(Token_t **tokens, int token_number, Token_t *invalid_token, int dimension)
+{
+    int exit_status = OK; 
+    int exit_status_routine;
+
+    int value;
+    // I gotta change arguments: Token_t* has to be TokensNode_t *
+    // In this way I can easily replace this instruction with other instructions
+
+
+
+    Macro_t *address_macro;
+
+    //============================ ALLOCATION SYNTAX CHECK ============================
+    // allocation directive syntax: #byte/word macro_label, address, [value]
+    // macro is used to reference this memory space (so macro_label will be replaced in further code by "address")
+    // if no macro want to be used, please use _trash
+
+    // "value" (last directive parameter) can be obmitted. In that case memory is not initialized
+
+    if ( token_number < MINIMUM_ALLOCATION_TOKENS )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: expected %d tokens, got %d\n", MINIMUM_ALLOCATION_TOKENS, token_number);
+
+        exit_status = INTERNAL_ERROR;
+        return exit_status;
+    }
+    if ( token_number > MAXIMUM_ALLOCATION_TOKENS )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Warning: expected %d tokens, got %d. Ignoring exceding ones\n", MINIMUM_ALLOCATION_TOKENS, token_number);
+    }
+
+    // checking if address is valid
+    exit_status_routine = _syntax_check_immediate(tokens[2]);
+    if ( exit_status_routine != OK || tokens[2] -> token_type -> number < 0 || tokens[2] -> token_type -> number > MAX_SEG_SPACE)
+    {
+        // address is invalid if it's not a number or if it's out of range 
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: address %s is not valid\n", tokens[2] -> token);
+
+        exit_status = INTERNAL_ERROR;
+        return exit_status;
+    }
+
+    if ( token_number > MINIMUM_ALLOCATION_TOKENS ) // if there is also value field
+    {
+        exit_status_routine = _syntax_check_immediate(tokens[3]);
+
+        value = tokens[3] -> token_type -> number;
+
+        if ( exit_status_routine != OK ||   // value is not a number
+            ( dimension == BYTE_DIMENSION &&    // number is greater than 1111 1111 = 127 if unsigned, else less than 1000 0001 = -63 is signed
+                ( ( value >= 128 ) || (value <= -64) )
+            ) || 
+            ( dimension == WORD_DIMENSION && // number is greater than 1111 1111 1111 1111 = 131071 if unsigned, else less than 1000 0000 0000 0001 = -65536 is signed
+                ( ( value >= 131072) || (value <= -65536))
+            )
+           )
+        {
+            write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: value %d is not a number or it is too great (or too small if negative\n", 
+            value);
+
+            exit_status = INTERNAL_ERROR;
+            return exit_status;
+        }
+
+        // if here then "value" is valid, then macro can be created
+
+        exit_status_routine = _is_token_label(tokens[1]);
+        if ( exit_status_routine != OK )
+        {
+            write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: macro_label %s is invalid. It must follow label syntax rules\n", 
+            tokens[1] -> token);
+
+            exit_status = INTERNAL_ERROR;
+            return INTERNAL_ERROR;
+        }
+
+        if ( strcmp("_trash", tokens[1] -> token) != 0 && tokens[1] -> token_length == 6 ) // macro_label is not _trash
+        {
+            // creating the macro containing the address
+            address_macro = init_macro();
+            strncpy(address_macro -> label, tokens[1] -> token, tokens[1] -> token_length);
+            address_macro -> label_length = tokens[1] -> token_length;
+            address_macro -> number = value;
+
+            exit_status_routine = update_code_macros(address_macro);
+            if ( exit_status_routine != OK )
+            {
+                write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: it exists already a macro named. Ignoring this definition %s\n", address_macro -> label);
+
+                free_macro(address_macro);
+            }
+        }
+        // if macro_label == _trash, macro is not created
+
+
+        // preparing for directive expansion
+        // note that this is executed only if 
+        exit_status_routine = _setup_expansion(tokens, token_number, invalid_token, dimension);
+
+        if ( exit_status_routine != OK )
+        {
+            write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: unable to setup directive expansion\n");
+
+            exit_status = INTERNAL_ERROR;
+            return exit_status;
+        }
+
+    }// end if token_number > MINIMUM_ALLOCATION_TOKENS
+
+    free_data_address += dimension/BYTE_DIMENSION;  // incrementing by 1 if a byte has been allocated, 2 for a word
+    // address contained in free_data_address is now occupied
+
+    exit_status = OK;
+    return exit_status;
+}
+
+int _setup_expansion(Token_t **tokens, int token_number, Token_t *invalid_token, int dimension)
+{
+    int exit_status = OK; 
+    int exit_status_routine;
+
+    unsigned short address, value;  // look at the allocation syntax down below
+    unsigned short upper_address, upper_value;
+    unsigned short lower_address, lower_value;
+
+    char upper_address_string[LUI_IMMEDIATE_LENGTH], upper_value_string[LUI_IMMEDIATE_LENGTH];
+    char lower_address_string[ADDI_IMMEDIATE_LENGTH], lower_value_string[ADDI_IMMEDIATE_LENGTH];
+
+    char instruction[30];
+
+    Token_t **_expanded0, **_expanded1, **_expanded2, **_expanded3, **_expanded4;
+    TokensNode_t *expanded0, *expanded1, *expanded2, *expanded3, *expanded4;
+    int filled_tokens;
+
+    //===================== DIRECTIVE EXPANSION INTO INSTRUCTIONS =====================
+    /*  directive gets expanded in:
+    *       - lui t0, upper_address (+1)
+    *       - addi t0, lower_address
+    *       - lui t1, upper_immediate (+1)
+    *       - addi t1, lower_immediate
+    *       - storeb / storew t0, t1 
+    */ 
+    
+    // initializing tokens
+    pending_instructions = expanded0;
+    expanded0 = init_tokens_node();
+    _expanded0 = init_token_array(MAX_TOKENS);
+    expanded0 -> tokens = _expanded0;
+    expanded0 -> next = expanded1;
+
+    expanded1 = init_tokens_node();
+    _expanded1 = init_token_array(MAX_TOKENS);
+    expanded1 -> tokens = _expanded1;
+    expanded1 -> next = expanded2;
+
+    expanded2 = init_tokens_node();
+    _expanded2 = init_token_array(MAX_TOKENS);
+    expanded2 -> tokens = _expanded2;
+    expanded2 -> next = expanded3;
+
+    expanded3 = init_tokens_node();
+    _expanded3 = init_token_array(MAX_TOKENS);
+    expanded3 -> tokens = _expanded3;
+    expanded3 -> next = expanded4;
+
+    expanded4 = init_tokens_node();
+    _expanded4 = init_token_array(MAX_TOKENS);
+    expanded4 -> tokens = _expanded4;
+    expanded4 -> next = NULL;
+
+    //setting current address
+    if ( free_data_address < dataseg_address )  // starting from the first free address
+        free_data_address = dataseg_address;
+
+    address = free_data_address;
+
+    lower_address = (address & LOWER_IMMEDIATE_MASK);   // fetching lower part of address
+
+    if ( address > 31)    // last lower bit = 1
+        upper_address = (address & UPPER_IMMEDIATE_MASK) + 1;
+    else
+        upper_address = (address & UPPER_IMMEDIATE_MASK);
+
+    value = tokens[2] -> token_type -> number;
+
+    lower_value = (value & LOWER_IMMEDIATE_MASK);
+    if ( value > 31)
+        upper_value = (value & UPPER_IMMEDIATE_MASK) + 1;
+    else
+        upper_value = (value & UPPER_IMMEDIATE_MASK);
+        
+
+    /* N.B.: why adding +1 if address > 31?
+     *  if address > 31 then 6th bit of lower_address = 1 (lower_address[5] = 1).
+     *  The expanded1 instruction adds lower_address to upper_address (which is in the upper part of the register)
+     *  If lower_address[5] = 1, then the 6bit-immediate is expanded WITH 1 (negative number expansion).
+     *  This would "corrupt" upper_address, so by adding 1 to upper_address the sequence of ones gets canceled.
+     * EXAMPLE:
+     *  upper = 1100 1000 00 
+     *  lower = 11 1001
+     * 
+     *  1100 1000 0000 0000 +
+     *  0000 0000 0100 0000 +   -> that's the +1 we talking about, lui instruction shift it by 6 bits
+     *  1111 1111 1111 1001 =
+     *  1101 1000 0011 1001
+     */
+
+
+    sprintf(upper_address_string, "%010d", upper_address);      // converting upper part of free_data_address to string
+    sprintf(lower_address_string, "%06d", lower_address);      // converting lower part of free_data_address to string
+    sprintf(upper_value_string, "%010d", upper_value);      // converting upper part of free_data_address to string
+    sprintf(lower_value_string, "%06d", lower_value);      // converting lower part of free_data_address to string
+
+
+    // EXPANDED0: loading upper part of address ->  lui t0, upper_10bits_of_address
+    strcpy(instruction, "lui t0, ");
+    strcat(instruction, upper_address_string); 
+    exit_status_routine = tokenize_instruction(instruction, _expanded0, &filled_tokens, invalid_token);   
+    expanded0 -> token_number = filled_tokens;
+    if ( exit_status_routine != OK )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: unable to tokenize expanded instruction 0\n");
+
+        exit_status = INTERNAL_ERROR;
+        
+    }
+    
+
+    // EXPANDED1: loading lower part of address -> addi t0, lower_6bits_of_address
+    strcpy(instruction, "addi t0, ");
+    strcat(instruction, lower_address_string); 
+    exit_status_routine = tokenize_instruction(instruction, _expanded1, &filled_tokens, invalid_token);   
+    expanded1 -> token_number = filled_tokens;
+    if ( exit_status_routine != OK )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: unable to tokenize expanded instruction 1\n");
+
+        exit_status = INTERNAL_ERROR;
+    }
+
+
+    // EXPANDED2: loading upper part of immediate -> lui t1, upper_10bits_of_value
+    strcpy(instruction, "lui t1, ");
+    strcat(instruction, upper_value_string);    
+    exit_status_routine = tokenize_instruction("", _expanded2, &filled_tokens, invalid_token);
+    expanded2 -> token_number = filled_tokens;
+    if ( exit_status_routine != OK )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: unable to tokenize expanded instruction 2\n");
+
+        exit_status = INTERNAL_ERROR;
+    }
+
+    // EXPANDED3: loading lower part of immediate -> addi t1, lower_6bits_of_value
+    strcpy(instruction, "addi t1, ");
+    strcat(instruction, lower_value_string);
+    exit_status_routine = tokenize_instruction("", _expanded3, &filled_tokens, invalid_token);
+    expanded3 -> token_number = filled_tokens;
+    if ( exit_status_routine != OK )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: unable to tokenize expanded instruction 3\n");
+
+        exit_status = INTERNAL_ERROR;
+    }
+
+    // EXPANDED4: storing to memory the immediate -> storeb / storew t0, t1
+    if ( dimension == BYTE_DIMENSION )
+        strcpy(instruction, "storeb t0, t1");
+    else // dimension == WORD_DIMENSION
+        strcpy(instruction, "storew t0, t1");
+    exit_status_routine = tokenize_instruction("", _expanded4, &filled_tokens, invalid_token);
+    expanded4 -> token_number = filled_tokens;
+    if ( exit_status_routine != OK )
+    {
+        write_log(SYNTAX_CHECK_LOG | CRITICAL_LOG, "[_syntax_check_allocation] Error: unable to tokenize expanded instruction 3\n");
+
+        exit_status = INTERNAL_ERROR;
+    }
+
+
+    // if an error occurred, delete all
+    if ( exit_status == INTERNAL_ERROR)
+    {
+        free_tokens_node(expanded0, 1);
+        free_tokens_node(expanded1, 1);
+        free_tokens_node(expanded2, 1);
+        free_tokens_node(expanded3, 1);
+        free_tokens_node(expanded4, 1);
+
+        pending_instructions = NULL;
+
+        return exit_status;
+    }
+
+
+    exit_status = OK;
+    return exit_status;
 
 }
 
@@ -577,6 +1068,9 @@ int syntax_check(Token_t **tokens, int token_number, Token_t *invalid_token)
         }
 
         // if here, then exit_status_routine = NOT_A_MACRO -> it's not a macro definition
+
+        // checking for segmentation label
+        exit_status_routine = _syntax_check_segmentation_label(tokens, token_number, invalid_token);
 
         // checking opcode
         exit_status_routine = _syntax_check_opcode(tokens[0]);

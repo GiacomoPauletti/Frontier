@@ -30,6 +30,8 @@ char* reserved_keywords[] =
     NULL
 };
 
+TokensNode_t* pending_instructions = NULL;  // has to be initialized
+
 Token_t* init_token()
 {
     Token_t *token;
@@ -89,9 +91,7 @@ Token_t ** init_token_array(int token_number)
 }
 
 TokenNode_t* init_token_node()
-{
-    TokenNode_t* token_node;
-
+{ TokenNode_t* token_node;
     token_node = malloc(sizeof(TokenNode_t));
 
     token_node -> token = NULL;
@@ -99,6 +99,19 @@ TokenNode_t* init_token_node()
 
     return token_node;
 }
+
+TokensNode_t* init_tokens_node()
+{
+    TokensNode_t* tokens_node;
+
+    tokens_node = malloc(sizeof(TokenNode_t));
+    tokens_node -> tokens = NULL;
+    tokens_node -> next = NULL;
+    tokens_node -> token_number = 0;
+
+    return tokens_node;
+}
+
 
 int free_token(Token_t *token)
 {
@@ -124,6 +137,62 @@ int free_token_array(Token_t **tokens, int token_number)
     
     free(tokens);
     exit_status = exit_status_routine;
+    return exit_status;
+}
+
+TokenNode_t* free_token_node(TokenNode_t *token_node, int is_free_token)
+{
+    TokenNode_t* next;
+
+    next = token_node -> next;
+
+    if ( is_free_token == 1 ) 
+    {
+        free_token(token_node -> token);
+    }
+    free(token_node);
+
+    return next;
+}
+
+int free_token_list(TokenNode_t *head, int is_free_tokens)
+{
+    int exit_status;
+
+    while ( head != NULL )
+    {
+        head = free_token_node(head, is_free_tokens);
+    }
+
+    exit_status = OK;
+    return exit_status;
+}
+
+TokensNode_t* free_tokens_node(TokensNode_t *tokens_node, int is_free_token)
+{
+    TokensNode_t* next;
+
+    next = tokens_node -> next;
+
+    if ( is_free_token == 1 ) 
+    {
+        free_token_array(tokens_node -> tokens, tokens_node -> token_number);
+    }
+    free(tokens_node);
+
+    return next;
+}
+
+int free_tokens_list(TokensNode_t *head, int is_free_tokens)
+{
+    int exit_status;
+
+    while ( head != NULL )
+    {
+        head = free_tokens_node(head, is_free_tokens);
+    }
+
+    exit_status = OK;
     return exit_status;
 }
 
@@ -202,6 +271,7 @@ int init_code_macros()
 int update_code_macros(Macro_t *macro)
 {
     int exit_status;
+    int macro_counter;
 
 
     if ( code_macros_length == 0 || code_macros == NULL )
@@ -219,6 +289,18 @@ int update_code_macros(Macro_t *macro)
         exit_status = INTERNAL_ERROR;
         return exit_status;
         
+    }
+
+    // checking if macro label is already used. If so, exits
+    for ( macro_counter = 0; macro_counter < code_macros_number; macro_counter++ )
+    {
+        if ( strcmp(code_macros[macro_counter] -> label, macro -> label) == 0 )
+        {
+            write_log(COMMON_LOG | CRITICAL_LOG, "[update_code_macros] Error: macro with label %s exists already\n", macro -> label);
+
+            exit_status = INTERNAL_ERROR;
+            return exit_status;
+        }
     }
 
     // extending code_macros array if there is no space left
@@ -272,21 +354,21 @@ int add_macro_reference(Macro_t *macro, Token_t* token)
     *token_node = init_token_node();
     if ( *token_node == NULL )
     {
-        write_log(COMMON_LOG | CRITICAL_LOG, "[append_macro_reference] Error: unable to initialize token_node\n");
+        write_log(COMMON_LOG | CRITICAL_LOG, "[add_macro_reference] Error: unable to initialize token_node\n");
 
         exit_status = INTERNAL_ERROR;
         return INTERNAL_ERROR;
     }
     (*token_node) -> token = token;
-    (*token_node) -> token = NULL;
+    (*token_node) -> next = NULL;
 
     exit_status = OK;
     return exit_status;
 }
 
 /*  TODO:
-        -check append_macro_reference
-        -use append_macro_reference when a macro is found
+        -check add_macro_reference
+        -use add_macro_reference when a macro is found
         -modify _syntax_check_label such that macro label are found
             -if there is no macro with that label, if it cannot be a register label, raise an error
             -if there is no register and no macro, raise an error
@@ -316,6 +398,17 @@ int free_macro_array(Macro_t **macros, int macro_number)
     exit_status = exit_status_routine;
     return exit_status;
 }
+
+
+unsigned short curr_segment = CODE_SEGMENT;
+unsigned short is_dataseg_set = 0;
+unsigned short dataseg_address = 0x0000;
+
+unsigned short is_codeseg_set = 0;
+unsigned short codeseg_address = 0x0000;
+
+unsigned short free_data_address = 0x0000;
+unsigned short free_code_address = 0x0000;
 
 int stolower(char *string)
 {

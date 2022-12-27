@@ -2,6 +2,7 @@
 #define SYNTAX_CHECK_H 1
 
 #include "../common/common.h"
+#include "../tokenize/tokenize.h"
 
 /*  SYNTAX_CHECK
  *  check if syntax is correct in this way:

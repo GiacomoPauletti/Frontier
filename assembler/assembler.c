@@ -117,6 +117,11 @@ int _debug()
     init_code_macros();
     // end of code macro initialization
 
+    // PENDING_INSTRUCTIONS INITIALIZATION
+    pending_instructions = init_tokens_node();    
+    //end of pending instruction
+
+
     exit_status_routine = tokenize_instruction("#define mv 10", tokens, &filled_tokens, invalid_token);
     write_log(main_log_priority, "Exit_status is %d\n", exit_status_routine);
     if ( exit_status_routine == OK )
